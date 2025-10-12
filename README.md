@@ -1,80 +1,39 @@
 # Song Collection Manager
 
-A full-stack web application for managing song collections. Upload CSV files containing songs and view them sorted by band name.
-
-Built with **NestJS**, **React**, **TypeScript**, **Prisma**, and **PostgreSQL**.
-
----
-
-## Features
-
-- Upload CSV files with song data
-- Automatic text transformation to lowercase
-- Store songs in PostgreSQL database
-- Display songs in a sortable table by band name
-- Clean, modern, and responsive UI
-- Full TypeScript support
-- Comprehensive error handling
-
----
-
-## Tech Stack
-
-### Backend
-- **NestJS** - Node.js framework
-- **Prisma** - Database ORM
-- **PostgreSQL** - Database (Docker)
-- **TypeScript** - Type safety
-
-### Frontend
-- **React 18** - UI library
-- **Vite** - Build tool
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Flowbite** - UI components
+Upload CSV files with song data and view them sorted by band name. Built with **NestJS**, **React**, **TypeScript**, **Prisma**, and **PostgreSQL**.
 
 ---
 
 ## Quick Start
 
-### Prerequisites
+**Prerequisites:** Node.js v20+, Docker Desktop
 
-- Node.js v20+
-- Docker Desktop
-- npm
+```bash
+# 1. Clone and setup
+git clone <repo-url>
+cd songs-assignment
+cp .env.example .env
+npm install
 
-### Installation
+# 2. Start backend (Terminal 1)
+npm run dev
+# Backend available at http://localhost:3001
 
-1. **Clone and setup**
-   ```bash
-   git clone <repo-url>
-   cd songs-assignment
-   cp .env.example .env
-   npm install
-   ```
+# 3. Start frontend (Terminal 2)
+npm run dev:frontend
+# Frontend available at http://localhost:5173
 
-2. **Start Backend** (Terminal 1)
-   ```bash
-   npm run dev
-   ```
-   Backend will be available at http://localhost:3001
-
-3. **Start Frontend** (Terminal 2)
-   ```bash
-   npm run dev:frontend
-   ```
-   Frontend will be available at http://localhost:5173
-
-4. **Test the app**
-   - Open http://localhost:5173
-   - Upload the included `F-S Test - T02 - 2023 - Song_list.csv` file
-   - View your songs sorted by band name
+# 4. Test the app
+# - Open http://localhost:5173
+# - Upload 'F-S Test - T02 - 2023 - Song_list.csv'
+# - View your songs sorted by band name
+```
 
 ---
 
 ## Commands
 
-All commands run from the root directory:
+Run from the root directory:
 
 | Command | Description |
 |---------|-------------|
@@ -89,61 +48,57 @@ All commands run from the root directory:
 
 ---
 
+## Tech Stack
+
+**Backend:** NestJS, Prisma ORM, PostgreSQL (Docker), TypeScript  
+**Frontend:** React 18, Vite, TypeScript, Tailwind CSS, Flowbite  
+**Features:** CSV parsing, automatic lowercase transformation, error handling, responsive UI
+
+---
+
 ## Project Structure
 
 ```
 songs-assignment/
-├── .env                    # Environment variables (single config)
-├── .env.example            # Environment template
-├── package.json            # Root scripts and commands
-├── docker-compose.yml      # PostgreSQL configuration
-│
-├── backend/                # NestJS API
+├── backend/              # NestJS API
 │   ├── src/
-│   │   ├── main.ts        # Application entry point
-│   │   ├── app.module.ts  # Root module
-│   │   ├── prisma.service.ts  # Database service
-│   │   └── songs/         # Songs feature module
-│   │       ├── songs.controller.ts  # API endpoints
-│   │       ├── songs.service.ts     # Business logic
-│   │       └── songs.module.ts      # Module definition
-│   ├── prisma/
-│   │   ├── schema.prisma  # Database schema
-│   │   └── migrations/    # Database migrations
-│   └── .env               # Symlink to root .env
+│   │   ├── songs/       # Songs feature (controller, service, module)
+│   │   ├── main.ts      # Application entry point
+│   │   └── prisma.service.ts  # Database service
+│   └── prisma/
+│       └── schema.prisma      # Database schema & migrations
 │
-└── frontend/              # React application
-    ├── src/
-    │   ├── App.tsx        # Main component
-    │   ├── components/    # React components
-    │   ├── services/      # API client
-    │   └── types/         # TypeScript definitions
-    └── .env               # Symlink to root .env
+├── frontend/            # React + Vite
+│   └── src/
+│       ├── components/  # FileUpload, SongsTable
+│       ├── services/    # API client
+│       └── types/       # TypeScript definitions
+│
+├── docker-compose.yml   # PostgreSQL database
+└── .env                 # Single config file (shared by backend & frontend)
 ```
 
 ---
 
 ## Configuration
 
-All environment variables are stored in a single `.env` file at the root:
+All environment variables in a single `.env` file at root:
 
 ```env
-# Database Configuration
+# Database
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=songs_db
 DB_PORT=5432
 
-# Backend Configuration
+# Backend
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/songs_db?schema=public"
 PORT=3001
 
-# Frontend Configuration
+# Frontend
 VITE_API_URL=http://localhost:3001/api
 FRONTEND_URL=http://localhost:5173
 ```
-
-Both backend and frontend use this single config file via symlinks.
 
 ---
 
@@ -151,222 +106,12 @@ Both backend and frontend use this single config file via symlinks.
 
 Base URL: `http://localhost:3001/api`
 
-### Upload CSV File
-```
-POST /songs/upload
-Content-Type: multipart/form-data
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `POST` | `/songs/upload` | Upload CSV file | `{ data: Song[], count: number }` |
+| `GET` | `/songs` | Get all songs (sorted by band) | `{ data: Song[], count: number }` |
 
-Body: file (CSV file)
-
-Response: {
-  "message": "CSV file processed successfully",
-  "count": 11,
-  "data": [...]
-}
-```
-
-### Get All Songs
-```
-GET /songs
-
-Response: {
-  "data": [...],
-  "count": 11
-}
-```
-Songs are returned sorted by band name in ascending order.
-
-### Delete All Songs
-```
-DELETE /songs
-
-Response: {
-  "message": "All songs deleted successfully",
-  "count": 11
-}
-```
+**CSV Format:** Semicolon-delimited with headers `Song Name;Band;Year`
 
 ---
 
-## CSV File Format
-
-The application expects CSV files with semicolon delimiters:
-
-```csv
-Song Name;Band;Year
-Crazy;Aerosmith;1990
-With Or Without You;U2;1988
-Billy Jean;Michael Jackson;1982
-```
-
-**Requirements:**
-- Delimiter: semicolon (`;`)
-- Headers: Song Name, Band, Year
-- Year must be between 1900 and current year
-
----
-
-## Development
-
-### Code Formatting
-
-Format all code with Prettier:
-```bash
-npm run format
-```
-
-### Code Linting
-
-Check and fix code issues:
-```bash
-npm run lint
-```
-
-### Database Management
-
-```bash
-cd backend
-
-# View database in browser
-npx prisma studio
-
-# Create new migration
-npx prisma migrate dev --name migration_name
-
-# Reset database
-npx prisma migrate reset
-```
-
----
-
-## Troubleshooting
-
-### Database Authentication Error
-
-If you get an authentication error when running migrations:
-
-```bash
-# Reset the database
-docker-compose down -v
-docker-compose up -d
-sleep 3
-
-# Try migration again
-cd backend
-npm run prisma:migrate
-npm run start:dev
-```
-
-### Port Already in Use
-
-If ports 3001, 5173, or 5432 are already in use:
-- Stop the process using that port
-- Or change the port in `.env` file
-
-### Cannot Connect to Database
-
-Make sure Docker Desktop is running:
-```bash
-docker ps
-```
-
-If the database container is not running:
-```bash
-npm run db:start
-```
-
----
-
-## Stopping the Application
-
-1. Press `Ctrl+C` in both terminal windows (backend and frontend)
-2. Stop the database:
-   ```bash
-   npm run db:stop
-   ```
-
----
-
-## Architecture & Design Decisions
-
-### Type Duplication (Frontend ↔ Backend)
-
-Types are **intentionally duplicated** between frontend and backend:
-
-```
-Frontend: frontend/src/types/song.ts
-  - Song (mirrors backend SongData)
-  - SongsResponse
-
-Backend: backend/src/songs/songs.service.ts
-  - SongData (mirrors frontend Song)
-  - SongsResponse
-```
-
-**Why duplicated?**
-- Simple setup for assignment scope
-- No build complexity or shared packages needed
-- Each layer remains independently deployable
-
-**⚠️ Maintenance:** If types change, both must be updated manually.
-
-**For larger projects, consider:**
-- Shared types package in monorepo
-- Code generation from OpenAPI/tRPC
-- Proto buffers for strict contracts
-
----
-
-### Validation Constants (Frontend ↔ Backend)
-
-Validation rules are **intentionally duplicated** for security and UX:
-
-```
-Frontend: frontend/src/constants/validation.ts
-  - MAX_FILE_SIZE = 10MB
-  - ALLOWED_FILE_EXTENSIONS = ['.csv']
-
-Backend: backend/src/constants/validation.ts
-  - MAX_FILE_SIZE = 10MB
-  - ALLOWED_FILE_EXTENSIONS = ['.csv']
-```
-
-**Why duplicated?**
-- **Frontend validation**: Immediate user feedback (better UX)
-- **Backend validation**: Security enforcement (never trust the client)
-
-**⚠️ Important:** If you change validation rules:
-1. Update `frontend/src/constants/validation.ts`
-2. Update `backend/src/constants/validation.ts`
-3. Both must stay in sync
-
-**Why not use environment variables?**
-- ENV variables are for environment-specific config and secrets
-- Business logic constants should be in code
-- Prevents abuse of ENV for non-secret values
-
-**For larger projects, consider:**
-- Shared constants package
-- Configuration API endpoint
-- Feature flags system
-
----
-
-## License
-
-UNLICENSED
-
----
-
-## Assignment Requirements
-
-This project fulfills the following requirements:
-- ✅ Reads CSV files and transforms text to lowercase
-- ✅ Stores data in PostgreSQL database
-- ✅ Displays songs in a table sorted by band name
-- ✅ Uses Node.js backend with NestJS
-- ✅ Uses React frontend with TypeScript
-- ✅ Uses Docker for database
-- ✅ Includes error handlers and try-catch blocks
-- ✅ Clean, well-documented code
-- ✅ Production-ready structure
