@@ -7,18 +7,33 @@ import {
 import { PrismaService } from '../prisma.service';
 import { parse } from 'csv-parse/sync';
 
+/**
+ * Represents a song record with lowercase text fields
+ */
 export type SongData = {
   songName: string;
   band: string;
   year: number;
 };
 
+/**
+ * Songs Service
+ * Handles business logic for song operations including CSV parsing and database interactions
+ */
 @Injectable()
 export class SongsService {
   private readonly logger = new Logger(SongsService.name);
 
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Uploads and processes a CSV file containing songs
+   * Parses CSV, validates data, and saves to database in a transaction
+   * @param fileBuffer - The CSV file content as a Buffer
+   * @returns Array of created song records
+   * @throws BadRequestException if CSV parsing or validation fails
+   * @throws InternalServerErrorException if database operation fails
+   */
   async uploadCsv(fileBuffer: Buffer): Promise<SongData[]> {
     const songsData = this.parseAndValidate(fileBuffer);
 
@@ -46,13 +61,28 @@ export class SongsService {
   }
 
   private parseAndValidate(fileBuffer: Buffer): SongData[] {
-    const records = parse(fileBuffer, {
-      columns: true,
-      skip_empty_lines: true,
-      delimiter: ';',
-      trim: true,
-    });
+    this.logger.log('Starting CSV parsing and validation');
 
+    let records: Record<string, string>[];
+
+    // Parse CSV with error handling
+    try {
+      records = parse(fileBuffer, {
+        columns: true,
+        skip_empty_lines: true,
+        delimiter: ';',
+        trim: true,
+      });
+
+      this.logger.log(`Parsed ${records.length} records from CSV`);
+    } catch (error) {
+      this.logger.error('CSV parsing failed', error);
+      throw new BadRequestException(
+        `Failed to parse CSV file: ${error instanceof Error ? error.message : 'Invalid format'}`,
+      );
+    }
+
+    // Validate and transform each record
     return records.map((record: Record<string, string>, index: number) => {
       const songName = record['Song Name']?.trim().toLowerCase();
       const band = record['Band']?.trim().toLowerCase();
@@ -78,6 +108,11 @@ export class SongsService {
     });
   }
 
+  /**
+   * Retrieves all songs from the database ordered by band name
+   * @returns Array of songs ordered by band name (ascending)
+   * @throws InternalServerErrorException if database operation fails
+   */
   async getAllSongsOrderedByBand(): Promise<SongData[]> {
     try {
       this.logger.log('Fetching all songs ordered by band name');
