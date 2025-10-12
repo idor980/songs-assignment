@@ -57,30 +57,6 @@ class ApiService {
       throw new Error('An unexpected error occurred while fetching songs');
     }
   }
-
-  /**
-   * Deletes all songs from the database
-   * @returns Promise with deletion response
-   * @throws Error if deletion fails
-   */
-  async deleteAllSongs(): Promise<{ message: string; count: number }> {
-    try {
-      const response = await fetch(`${API_URL}/songs`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete songs');
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('An unexpected error occurred while deleting songs');
-    }
-  }
 }
 
 export const apiService = new ApiService();
