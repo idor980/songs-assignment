@@ -1,179 +1,87 @@
-# Songs Assignment
+# Song Collection Manager
 
-A full-stack application for managing songs with NestJS backend and PostgreSQL database.
+Full-stack application to upload CSV files with songs and display them sorted by band name.
 
-## 📋 Prerequisites
+Built with NestJS, React, TypeScript, Prisma, and PostgreSQL.
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [Docker](https://www.docker.com/) and Docker Compose
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+## Quick Start
 
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-
-```bash
-git clone <your-repo-url>
-cd songs-assignment
-```
-
-### 2. Set Up Environment Variables
-
-Create `.env` file in the **root directory**:
-
+### 1. Setup Environment
 ```bash
 cp .env.example .env
+npm install
 ```
 
-Create `.env` file in the **backend directory**:
-
-```bash
-cp backend/.env.example backend/.env
-```
-
-> **Note**: You can modify the default values in these `.env` files if needed. Make sure the database credentials match between root `.env` and `backend/.env`.
-
-### 3. Run the Application
-
-From the **root directory**, run:
-
+### 2. Start Backend
 ```bash
 npm run dev
 ```
+Backend runs on http://localhost:3001
 
-This single command will:
-- ✅ Start the PostgreSQL database in Docker
-- ✅ Install backend dependencies
-- ✅ Run database migrations
-- ✅ Generate Prisma Client
-- ✅ Start the NestJS backend in development mode
+### 3. Start Frontend (New Terminal)
+```bash
+npm run dev:frontend
+```
+Frontend runs on http://localhost:5173
 
-The backend will be available at: **http://localhost:3000**
+### 4. Test
+Open http://localhost:5173 and upload `F-S Test - T02 - 2023 - Song_list.csv`
 
-## 📦 Available Scripts
-
-### Root Directory Scripts
+## Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start everything (DB + backend setup + backend dev server) |
-| `npm run db:up` | Start the PostgreSQL database container |
-| `npm run db:down` | Stop the database container |
-| `npm run db:reset` | Reset database (removes all data and restarts) |
-| `npm run backend:dev` | Start backend in development mode (watch mode) |
-| `npm run backend:build` | Build backend for production |
-| `npm run backend:start` | Start backend in production mode |
+| `npm install` | Install all dependencies |
+| `npm run dev` | Start database + backend |
+| `npm run dev:frontend` | Start frontend |
+| `npm run dev:backend` | Start backend only |
+| `npm run db:start` | Start database only |
+| `npm run db:stop` | Stop database |
 
-### Backend Directory Scripts
+## Configuration
 
-Navigate to `backend/` directory and run:
+All environment variables are in `.env` at the root:
+- Database settings
+- Backend port
+- Frontend API URL
 
-| Command | Description |
-|---------|-------------|
-| `npm run start:dev` | Start in development mode with hot-reload |
-| `npm run build` | Build the application |
-| `npm run start:prod` | Start in production mode |
-| `npm run test` | Run unit tests |
-| `npm run test:e2e` | Run end-to-end tests |
-
-## 🗄️ Database Management
-
-### View Database with Prisma Studio
-
-```bash
-cd backend
-npx prisma studio
-```
-
-This opens a visual editor for your database at http://localhost:5555
-
-### Create a New Migration
-
-After modifying the Prisma schema:
-
-```bash
-cd backend
-npx prisma migrate dev --name your_migration_name
-```
-
-### Reset Database
-
-```bash
-npm run db:reset
-```
-
-## 📊 Sample Data
-
-The repository includes a sample CSV file (`F-S Test - T02 - 2023 - Song_list.csv`) with song data that can be imported into the database.
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 songs-assignment/
-├── backend/                 # NestJS backend application
-│   ├── src/                # Source code
-│   ├── prisma/             # Prisma schema and migrations
-│   │   └── schema.prisma   # Database schema
-│   ├── dist/               # Compiled output
-│   └── package.json        # Backend dependencies
-├── docker-compose.yml      # Docker configuration for PostgreSQL
-├── .env                    # Root environment variables (for Docker)
-├── .env.example            # Root environment template
-└── README.md               # This file
+├── backend/              # NestJS API
+│   ├── src/             # Source code
+│   ├── prisma/          # Database schema
+│   └── .env            # → Symlink to ../.env
+├── frontend/            # React App
+│   ├── src/            # Source code
+│   └── .env           # → Symlink to ../.env
+├── .env               # Main config file
+├── docker-compose.yml # PostgreSQL
+└── package.json       # Root scripts
 ```
 
-## 🔧 Manual Setup (Alternative)
+## Tech Stack
 
-If you prefer to run commands separately:
+- **Backend**: NestJS, Prisma, PostgreSQL
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS, Flowbite
+- **Database**: PostgreSQL (Docker)
+
+## Troubleshooting
+
+### Database Authentication Error
+
+If you get `Authentication failed` error when running migrations:
 
 ```bash
-# 1. Start database
+# Reset the database
+docker-compose down -v
 docker-compose up -d
-
-# 2. Wait a few seconds for DB to initialize
 sleep 3
 
-# 3. Install backend dependencies
+# Try again
 cd backend
-npm install
-
-# 4. Run migrations
-npx prisma migrate dev
-
-# 5. Start backend
+npm run prisma:migrate
 npm run start:dev
 ```
-
-## 🛑 Stopping the Application
-
-To stop the backend, press `Ctrl+C` in the terminal.
-
-To stop the database:
-
-```bash
-npm run db:down
-```
-
-## 🐛 Troubleshooting
-
-### Database Connection Issues
-
-If you encounter database connection errors:
-
-1. Make sure Docker is running
-2. Check if database is up: `docker-compose ps`
-3. Verify your `.env` files have matching credentials
-4. Try resetting the database: `npm run db:reset`
-
-### Port Already in Use
-
-If port 5432 (PostgreSQL) or 3000 (NestJS) is already in use:
-
-- Change `DB_PORT` in root `.env` file
-- Update `DATABASE_URL` in `backend/.env` accordingly
-- Change NestJS port in `backend/src/main.ts` if needed
-
-## 📝 License
-
-[MIT License](LICENSE)
 

@@ -1,22 +1,26 @@
 {
   "name": "songs-assignment",
   "version": "1.0.0",
-  "description": "Songs management application with NestJS backend and PostgreSQL",
+  "description": "A full-stack Song Collection Manager with React frontend, NestJS backend, and PostgreSQL database",
   "scripts": {
-    "dev": "npm run db:up && npm run backend:setup && npm run backend:dev",
-    "db:up": "docker-compose up -d && echo '⏳ Waiting for database to be ready...' && sleep 3",
-    "db:down": "docker-compose down",
-    "db:reset": "docker-compose down -v && npm run db:up",
-    "backend:setup": "cd backend && npm install && npx dotenv -e ../.env -- npx prisma generate && npx dotenv -e ../.env -- npx prisma migrate dev",
-    "backend:dev": "cd backend && npx dotenv -e ../.env -- npm run start:dev",
-    "backend:build": "cd backend && npm run build",
-    "backend:start": "cd backend && npx dotenv -e ../.env -- npm run start:prod"
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "docker-compose up -d && echo '⏳ Waiting for database to be ready...' && sleep 3 && cd backend && npm run prisma:generate && npm run prisma:migrate && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start:dev",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down"
   },
   "keywords": [
     "nestjs",
+    "react",
+    "typescript",
     "postgresql",
     "prisma",
-    "songs"
+    "tailwind",
+    "flowbite",
+    "songs",
+    "csv",
+    "docker"
   ],
   "author": "",
   "license": "ISC",
