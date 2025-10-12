@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Button, Alert, Spinner } from 'flowbite-react';
 import { HiUpload, HiCheckCircle, HiExclamationCircle } from 'react-icons/hi';
 import { apiService } from '../services/api';
+import { MAX_FILE_SIZE, ALLOWED_FILE_EXTENSIONS } from '../constants/validation';
 
 interface FileUploadProps {
   onUploadSuccess: () => void;
@@ -28,16 +29,18 @@ export const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
 
     if (file) {
       // Validate file type
-      if (!file.name.toLowerCase().endsWith('.csv')) {
+      const hasValidExtension = ALLOWED_FILE_EXTENSIONS.some(ext => 
+        file.name.toLowerCase().endsWith(ext)
+      );
+      if (!hasValidExtension) {
         setError('Please select a CSV file');
         setSelectedFile(null);
         return;
       }
 
-      // Validate file size (10MB limit)
-      const maxSize = 10 * 1024 * 1024;
-      if (file.size > maxSize) {
-        setError('File size exceeds 10MB limit');
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        setError(`File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} limit`);
         setSelectedFile(null);
         return;
       }
@@ -118,7 +121,7 @@ export const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
                 {selectedFile ? selectedFile.name : 'Click to select CSV file'}
               </p>
               <p className="text-sm text-gray-500">
-                Maximum file size: 10MB
+                Maximum file size: {MAX_FILE_SIZE / (1024 * 1024)}
               </p>
             </div>
           </div>

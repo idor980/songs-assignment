@@ -287,6 +287,71 @@ npm run db:start
 
 ---
 
+## Architecture & Design Decisions
+
+### Type Duplication (Frontend ↔ Backend)
+
+Types are **intentionally duplicated** between frontend and backend:
+
+```
+Frontend: frontend/src/types/song.ts
+  - Song (mirrors backend SongData)
+  - SongsResponse
+
+Backend: backend/src/songs/songs.service.ts
+  - SongData (mirrors frontend Song)
+  - SongsResponse
+```
+
+**Why duplicated?**
+- Simple setup for assignment scope
+- No build complexity or shared packages needed
+- Each layer remains independently deployable
+
+**⚠️ Maintenance:** If types change, both must be updated manually.
+
+**For larger projects, consider:**
+- Shared types package in monorepo
+- Code generation from OpenAPI/tRPC
+- Proto buffers for strict contracts
+
+---
+
+### Validation Constants (Frontend ↔ Backend)
+
+Validation rules are **intentionally duplicated** for security and UX:
+
+```
+Frontend: frontend/src/constants/validation.ts
+  - MAX_FILE_SIZE = 10MB
+  - ALLOWED_FILE_EXTENSIONS = ['.csv']
+
+Backend: backend/src/constants/validation.ts
+  - MAX_FILE_SIZE = 10MB
+  - ALLOWED_FILE_EXTENSIONS = ['.csv']
+```
+
+**Why duplicated?**
+- **Frontend validation**: Immediate user feedback (better UX)
+- **Backend validation**: Security enforcement (never trust the client)
+
+**⚠️ Important:** If you change validation rules:
+1. Update `frontend/src/constants/validation.ts`
+2. Update `backend/src/constants/validation.ts`
+3. Both must stay in sync
+
+**Why not use environment variables?**
+- ENV variables are for environment-specific config and secrets
+- Business logic constants should be in code
+- Prevents abuse of ENV for non-secret values
+
+**For larger projects, consider:**
+- Shared constants package
+- Configuration API endpoint
+- Feature flags system
+
+---
+
 ## License
 
 UNLICENSED

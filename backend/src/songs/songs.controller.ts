@@ -9,6 +9,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SongsService, SongsResponse } from './songs.service';
+import {
+  MAX_FILE_SIZE,
+  ALLOWED_FILE_EXTENSIONS,
+} from '../constants/validation';
 
 /**
  * Songs Controller
@@ -78,17 +82,23 @@ export class SongsController {
       );
     }
 
-    if (!file.originalname.toLowerCase().endsWith('.csv')) {
+    // Validate file type
+    const hasValidExtension = ALLOWED_FILE_EXTENSIONS.some((ext) =>
+      file.originalname.toLowerCase().endsWith(ext),
+    );
+    if (!hasValidExtension) {
       throw new BadRequestException(
         'Invalid file type. Only CSV files are allowed.',
       );
     }
 
+    // Validate file size
     // Note: File size limit is not specified in the assignment,
     // but is added as a security safeguard to prevent DoS attacks and excessive memory usage
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      throw new BadRequestException('File size exceeds 10MB limit.');
+    if (file.size > MAX_FILE_SIZE) {
+      throw new BadRequestException(
+        `File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)}MB limit.`,
+      );
     }
   }
 }
