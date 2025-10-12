@@ -69,7 +69,7 @@ export class SongsService {
     } catch (error) {
       this.logger.error('CSV parsing failed', error);
       throw new BadRequestException(
-        `Failed to parse CSV file: ${error instanceof Error ? error.message : 'Invalid format'}`,
+        "Invalid CSV format. File must include: 'Song Name', 'Band', and 'Year'.",
       );
     }
 

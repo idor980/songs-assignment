@@ -29,7 +29,9 @@ export const SongsTable = ({ songs, isLoading, error, onRefresh }: SongsTablePro
     return (
       <div className="w-full max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg border border-gray-200">
         <Alert color="failure" icon={HiExclamationCircle}>
-          <span className="font-medium">Error!</span> {error}
+          <div className="break-words">
+            <span className="font-medium">Error!</span> {error}
+          </div>
         </Alert>
       </div>
     );

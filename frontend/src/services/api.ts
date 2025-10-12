@@ -1,5 +1,10 @@
 import type { SongsResponse } from '../types/song';
 
+/**
+ * API Base URL
+ * Reads from environment variable with fallback for development convenience
+ * Set VITE_API_URL in .env file to override
+ */
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 /**

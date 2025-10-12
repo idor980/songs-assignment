@@ -1,18 +1,14 @@
 import { useState, useRef } from 'react';
-import { Button, Alert, Spinner } from 'flowbite-react';
+import { Spinner } from 'flowbite-react';
 import { HiUpload, HiCheckCircle, HiExclamationCircle } from 'react-icons/hi';
 import { apiService } from '../services/api';
 import { MAX_FILE_SIZE, ALLOWED_FILE_EXTENSIONS } from '../constants/validation';
-
-interface FileUploadProps {
-  onUploadSuccess: () => void;
-}
 
 /**
  * FileUpload Component
  * Handles CSV file selection and upload to the backend
  */
-export const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
+export const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: () => void }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +36,7 @@ export const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
 
       // Validate file size
       if (file.size > MAX_FILE_SIZE) {
-        setError(`File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)} limit`);
+        setError(`File size exceeds ${MAX_FILE_SIZE / (1024 * 1024)}MB limit`);
         setSelectedFile(null);
         return;
       }
@@ -72,21 +68,27 @@ export const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
         fileInputRef.current.value = '';
       }
 
-      // Notify parent component to refresh songs list
-      setTimeout(() => {
-        onUploadSuccess();
-      }, 1000);
+      // Notify parent component to refresh songs list immediately
+      onUploadSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload file');
+      
+      // Clear selected file on error so user must select again
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } finally {
       setIsUploading(false);
     }
   };
 
   /**
-   * Triggers file input click
+   * Triggers file input click and clears messages
    */
   const handleSelectFile = () => {
+    setError(null);
+    setSuccess(null);
     fileInputRef.current?.click();
   };
 
@@ -112,65 +114,92 @@ export const FileUpload = ({ onUploadSuccess }: FileUploadProps) => {
             className="hidden"
           />
 
-          <div className="w-full p-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors cursor-pointer"
+          <div 
+            className={`w-full p-8 border-2 border-dashed rounded-lg transition-all cursor-pointer ${
+              selectedFile 
+                ? 'border-green-300 bg-green-50 hover:border-green-500 hover:bg-green-100' 
+                : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+            }`}
             onClick={handleSelectFile}
           >
             <div className="flex flex-col items-center space-y-2">
-              <HiUpload className="text-5xl text-gray-400" />
+              <HiUpload className={`text-5xl ${selectedFile ? 'text-green-500' : 'text-gray-400'}`} />
               <p className="text-lg font-medium text-gray-700">
                 {selectedFile ? selectedFile.name : 'Click to select CSV file'}
               </p>
-              <p className="text-sm text-gray-500">
-                Maximum file size: {MAX_FILE_SIZE / (1024 * 1024)}
-              </p>
+              {selectedFile ? (
+                <p className="text-xs text-green-600 font-medium">
+                  ✓ File selected · Click to change
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Maximum file size: {MAX_FILE_SIZE / (1024 * 1024)}MB
+                </p>
+              )}
             </div>
           </div>
 
           {selectedFile && (
-            <div className="flex gap-3">
-              <Button
-                color="blue"
-                onClick={handleUpload}
-                disabled={isUploading}
-              >
-                {isUploading ? (
-                  <>
-                    <Spinner size="sm" className="mr-2" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <HiUpload className="mr-2 h-5 w-5" />
-                    Upload File
-                  </>
-                )}
-              </Button>
-              <Button
-                color="gray"
-                onClick={handleSelectFile}
-                disabled={isUploading}
-              >
-                Choose Different File
-              </Button>
-            </div>
+            <button
+              onClick={handleUpload}
+              disabled={isUploading}
+              className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              {isUploading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <HiUpload className="h-5 w-5" />
+                  <span>Upload File</span>
+                </>
+              )}
+            </button>
           )}
         </div>
 
-        {/* Success Alert */}
-        {success && (
-          <Alert color="success" icon={HiCheckCircle}>
-            <span className="font-medium">Success!</span> {success}
-          </Alert>
-        )}
-
-        {/* Error Alert */}
-        {error && (
-          <Alert color="failure" icon={HiExclamationCircle}>
-            <span className="font-medium">Error!</span> {error}
-          </Alert>
-        )}
+        {/* Alerts */}
+        {success && <SuccessAlert message={success} />}
+        {error && <ErrorAlert message={error} />}
       </div>
     </div>
   );
 };
 
+
+
+
+/**
+ * Success Alert Component
+ */
+const SuccessAlert = ({ message }: { message: string }) => (
+  <div className="p-4 bg-green-50 border-2 border-green-500 rounded-lg">
+    <div className="flex items-start space-x-3">
+      <HiCheckCircle className="text-green-600 text-2xl flex-shrink-0 mt-0.5" />
+      <div className="flex-1">
+        <p className="font-bold text-green-800 mb-1">Success!</p>
+        <p className="text-green-700">{message}</p>
+      </div>
+    </div>
+  </div>
+);
+
+/**
+ * Error Alert Component
+ */
+const ErrorAlert = ({ message }: { message: string }) => (
+  <div className="p-4 bg-red-50 border-2 border-red-500 rounded-lg animate-shake">
+    <div className="flex items-start space-x-3">
+      <HiExclamationCircle className="text-red-600 text-2xl flex-shrink-0 mt-0.5 animate-pulse" />
+      <div className="flex-1 break-words">
+        <p className="font-bold text-red-800 mb-1">Upload Failed</p>
+        <p className="text-red-700 text-sm">{message}</p>
+        <p className="text-red-600 text-xs mt-2 font-medium">
+          Please select a valid CSV file and try again.
+        </p>
+      </div>
+    </div>
+  </div>
+);
