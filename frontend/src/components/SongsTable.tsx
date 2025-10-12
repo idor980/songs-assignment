@@ -1,4 +1,4 @@
-import { Badge, Spinner, Alert, Button } from 'flowbite-react';
+import { Badge, Spinner, Alert, Button, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
 import { HiExclamationCircle, HiMusicNote } from 'react-icons/hi';
 import type { Song } from '../types/song';
 
@@ -69,44 +69,42 @@ export const SongsTable = ({ songs, isLoading, error, onRefresh }: SongsTablePro
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-              <tr>
-                <th className="px-6 py-3">#</th>
-                <th className="px-6 py-3">
-                  <div className="flex items-center">
-                    Band Name
-                    <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M5 10l5-5 5 5H5z" />
-                    </svg>
-                  </div>
-                </th>
-                <th className="px-6 py-3">Song Name</th>
-                <th className="px-6 py-3">Year</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table hoverable>
+            <TableHead>
+              <TableHeadCell>#</TableHeadCell>
+              <TableHeadCell>
+                <div className="flex items-center">
+                  Band Name
+                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 10l5-5 5 5H5z" />
+                  </svg>
+                </div>
+              </TableHeadCell>
+              <TableHeadCell>Song Name</TableHeadCell>
+              <TableHeadCell>Year</TableHeadCell>
+            </TableHead>
+            <TableBody className="divide-y">
               {songs.map((song, index) => (
-                <tr
+                <TableRow
                   key={`${song.band}-${song.songName}-${index}`}
-                  className="bg-white border-b hover:bg-gray-50 transition-colors"
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
                 >
-                  <td className="px-6 py-4 font-medium text-gray-600">
+                  <TableCell >
                     {index + 1}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-gray-900">
+                  </TableCell>
+                  <TableCell className="font-semibold text-gray-900 dark:text-white">
                     {song.band}
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">
+                  </TableCell>
+                  <TableCell>
                     {song.songName}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge color="purple">{song.year}</Badge>
-                  </td>
-                </tr>
+                  </TableCell>
+                  <TableCell>
+                    {song.year}
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
