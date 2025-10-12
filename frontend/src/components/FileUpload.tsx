@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Spinner } from 'flowbite-react';
 import { HiUpload, HiCheckCircle, HiExclamationCircle } from 'react-icons/hi';
+import { twMerge } from 'tailwind-merge';
 import { apiService } from '../services/api';
 import { MAX_FILE_SIZE, ALLOWED_FILE_EXTENSIONS } from '../constants/validation';
 
@@ -115,15 +116,16 @@ export const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: () => void })
           />
 
           <div 
-            className={`w-full p-8 border-2 border-dashed rounded-lg transition-all cursor-pointer ${
+            className={twMerge(
+              'w-full p-8 border-2 border-dashed rounded-lg transition-all cursor-pointer',
               selectedFile 
                 ? 'border-blue-300 bg-blue-50 hover:border-blue-500 hover:bg-blue-100' 
                 : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
-            }`}
+            )}
             onClick={handleSelectFile}
           >
             <div className="flex flex-col items-center space-y-2">
-              <HiUpload className={`text-5xl ${selectedFile ? 'text-blue-500' : 'text-gray-400'}`} />
+              <HiUpload className={twMerge('text-5xl', selectedFile ? 'text-blue-500' : 'text-gray-400')} />
               <p className="text-lg font-medium text-gray-700">
                 {selectedFile ? selectedFile.name : 'Click to select CSV file'}
               </p>

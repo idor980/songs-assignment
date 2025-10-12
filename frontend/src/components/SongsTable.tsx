@@ -62,7 +62,7 @@ export const SongsTable = ({ songs, isLoading, error, onRefresh }: SongsTablePro
               Total: <Badge color="blue" className="inline-flex">{songs.length}</Badge> songs
             </p>
           </div>
-          <Button onClick={onRefresh} color="light" size="sm">
+          <Button onClick={onRefresh} color="light" size="sm" className="p-1">
             Refresh
           </Button>
         </div>
