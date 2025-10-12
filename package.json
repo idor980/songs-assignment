@@ -1,0 +1,26 @@
+{
+  "name": "songs-assignment",
+  "version": "1.0.0",
+  "description": "Songs management application with NestJS backend and PostgreSQL",
+  "scripts": {
+    "dev": "npm run db:up && npm run backend:setup && npm run backend:dev",
+    "db:up": "docker-compose up -d && echo '⏳ Waiting for database to be ready...' && sleep 3",
+    "db:down": "docker-compose down",
+    "db:reset": "docker-compose down -v && npm run db:up",
+    "backend:setup": "cd backend && npm install && npx dotenv -e ../.env -- npx prisma generate && npx dotenv -e ../.env -- npx prisma migrate dev",
+    "backend:dev": "cd backend && npx dotenv -e ../.env -- npm run start:dev",
+    "backend:build": "cd backend && npm run build",
+    "backend:start": "cd backend && npx dotenv -e ../.env -- npm run start:prod"
+  },
+  "keywords": [
+    "nestjs",
+    "postgresql",
+    "prisma",
+    "songs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv-cli": "^10.0.0"
+  }
+}
