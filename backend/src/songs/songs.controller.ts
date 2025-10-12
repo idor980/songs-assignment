@@ -8,7 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { SongsService, SongData } from './songs.service';
+import { SongsService, SongsResponse } from './songs.service';
 
 /**
  * Songs Controller
@@ -23,7 +23,7 @@ export class SongsController {
   /**
    * Upload and process a CSV file containing songs
    * @param file - Uploaded CSV file
-   * @returns Success message with count of processed songs and song data
+   * @returns Response with count of processed songs and song data
    * @throws BadRequestException if file validation or CSV parsing fails
    * @throws InternalServerErrorException if database operation fails
    */
@@ -31,7 +31,7 @@ export class SongsController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadCsv(
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<{ message: string; count: number; data: SongData[] }> {
+  ): Promise<SongsResponse> {
     try {
       this.logger.log(`Received file upload: ${file?.originalname}`);
 
@@ -40,9 +40,8 @@ export class SongsController {
       const songs = await this.songsService.uploadCsv(file.buffer);
 
       return {
-        message: 'CSV file processed successfully',
-        count: songs.length,
         data: songs,
+        count: songs.length,
       };
     } catch (error) {
       this.logger.error('Error in upload endpoint', error);
@@ -52,11 +51,11 @@ export class SongsController {
 
   /**
    * Get all songs ordered by band name
-   * @returns Array of songs ordered by band name with count
+   * @returns Response with array of songs ordered by band name and count
    * @throws InternalServerErrorException if database operation fails
    */
   @Get()
-  async getAllSongs(): Promise<{ data: SongData[]; count: number }> {
+  async getAllSongs(): Promise<SongsResponse> {
     try {
       this.logger.log('Fetching all songs');
 

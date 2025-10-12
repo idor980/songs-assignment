@@ -1,4 +1,4 @@
-import type { SongsResponse, UploadResponse } from '../types/song';
+import type { SongsResponse } from '../types/song';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -9,10 +9,10 @@ class ApiService {
   /**
    * Uploads a CSV file to the backend
    * @param file - The CSV file to upload
-   * @returns Promise with upload response
+   * @returns Promise with songs response
    * @throws Error if upload fails
    */
-  async uploadCsv(file: File): Promise<UploadResponse> {
+  async uploadCsv(file: File): Promise<SongsResponse> {
     try {
       const formData = new FormData();
       formData.append('file', file);

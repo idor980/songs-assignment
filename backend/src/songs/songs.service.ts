@@ -8,15 +8,6 @@ import { PrismaService } from '../prisma.service';
 import { parse } from 'csv-parse/sync';
 
 /**
- * Represents a song record with lowercase text fields
- */
-export type SongData = {
-  songName: string;
-  band: string;
-  year: number;
-};
-
-/**
  * Songs Service
  * Handles business logic for song operations including CSV parsing and database interactions
  */
@@ -139,3 +130,26 @@ export class SongsService {
     }
   }
 }
+
+/**
+ * Song Types
+ *
+ * ⚠️ Important: If these types change, the frontend types must be updated manually to match.
+ */
+
+/**
+ * Represents a song record with lowercase text fields
+ */
+export type SongData = {
+  songName: string;
+  band: string;
+  year: number;
+};
+
+/**
+ * API response structure for song operations
+ */
+export type SongsResponse = {
+  data: SongData[];
+  count: number;
+};
