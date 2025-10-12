@@ -7,7 +7,7 @@ import { Logger } from '@nestjs/common';
  */
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  
+
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend communication
@@ -20,10 +20,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const port = process.env.PORT || 3001;
-  
+
   await app.listen(port);
-  
+
   logger.log(`🚀 Application is running on: http://localhost:${port}/api`);
 }
 
-bootstrap();
+void bootstrap();

@@ -42,26 +42,28 @@ export class SongsService {
       this.logger.log(`Parsed ${records.length} records from CSV`);
 
       // Validate and transform records
-      const songsData: SongData[] = records.map((record: any, index: number) => {
-        const songName = record['Song Name']?.trim().toLowerCase();
-        const band = record['Band']?.trim().toLowerCase();
-        const year = parseInt(record['Year']?.trim(), 10);
+      const songsData: SongData[] = records.map(
+        (record: Record<string, string>, index: number) => {
+          const songName = record['Song Name']?.trim().toLowerCase();
+          const band = record['Band']?.trim().toLowerCase();
+          const year = parseInt(record['Year']?.trim(), 10);
 
-        // Validate required fields
-        if (!songName || !band) {
-          throw new BadRequestException(
-            `Missing required fields at row ${index + 2}. Song Name and Band are required.`,
-          );
-        }
+          // Validate required fields
+          if (!songName || !band) {
+            throw new BadRequestException(
+              `Missing required fields at row ${index + 2}. Song Name and Band are required.`,
+            );
+          }
 
-        if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
-          throw new BadRequestException(
-            `Invalid year at row ${index + 2}. Year must be a valid number between 1900 and current year.`,
-          );
-        }
+          if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+            throw new BadRequestException(
+              `Invalid year at row ${index + 2}. Year must be a valid number between 1900 and current year.`,
+            );
+          }
 
-        return { songName, band, year };
-      });
+          return { songName, band, year };
+        },
+      );
 
       // Clear existing songs and insert new ones
       await this.prisma.song.deleteMany();
@@ -72,18 +74,20 @@ export class SongsService {
         data: songsData,
       });
 
-      this.logger.log(`Successfully inserted ${createdSongs.count} songs into database`);
+      this.logger.log(
+        `Successfully inserted ${createdSongs.count} songs into database`,
+      );
 
       return songsData;
     } catch (error) {
       this.logger.error('Error processing CSV file', error);
-      
+
       if (error instanceof BadRequestException) {
         throw error;
       }
 
       throw new BadRequestException(
-        `Failed to process CSV file: ${error.message}`,
+        `Failed to process CSV file: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -123,11 +127,11 @@ export class SongsService {
   async deleteAllSongs(): Promise<number> {
     try {
       this.logger.log('Deleting all songs from database');
-      
+
       const result = await this.prisma.song.deleteMany();
-      
+
       this.logger.log(`Deleted ${result.count} songs from database`);
-      
+
       return result.count;
     } catch (error) {
       this.logger.error('Error deleting songs from database', error);
@@ -135,4 +139,3 @@ export class SongsService {
     }
   }
 }
-

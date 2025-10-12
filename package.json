@@ -8,7 +8,9 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run start:dev",
     "db:start": "docker-compose up -d",
-    "db:stop": "docker-compose down"
+    "db:stop": "docker-compose down",
+    "format": "cd backend && npm run format",
+    "lint": "cd backend && npm run lint"
   },
   "keywords": [
     "nestjs",

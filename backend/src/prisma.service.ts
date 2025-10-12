@@ -7,7 +7,10 @@ import { PrismaClient } from '@prisma/client';
  * Implements lifecycle hooks to connect on module init and disconnect on destroy.
  */
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   /**
    * Connects to the database when the module is initialized
    */
@@ -22,4 +25,3 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     await this.$disconnect();
   }
 }
-

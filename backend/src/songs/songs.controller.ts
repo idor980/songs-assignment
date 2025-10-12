@@ -39,12 +39,16 @@ export class SongsController {
 
       // Validate file exists
       if (!file) {
-        throw new BadRequestException('No file uploaded. Please upload a CSV file.');
+        throw new BadRequestException(
+          'No file uploaded. Please upload a CSV file.',
+        );
       }
 
       // Validate file type
       if (!file.originalname.toLowerCase().endsWith('.csv')) {
-        throw new BadRequestException('Invalid file type. Only CSV files are allowed.');
+        throw new BadRequestException(
+          'Invalid file type. Only CSV files are allowed.',
+        );
       }
 
       // Validate file size (10MB limit)
@@ -63,7 +67,7 @@ export class SongsController {
       };
     } catch (error) {
       this.logger.error('Error in upload endpoint', error);
-      
+
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -116,4 +120,3 @@ export class SongsController {
     }
   }
 }
-
