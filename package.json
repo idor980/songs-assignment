@@ -4,9 +4,9 @@
   "description": "A full-stack Song Collection Manager with React frontend, NestJS backend, and PostgreSQL database",
   "scripts": {
     "install": "cd backend && npm install && cd ../frontend && npm install",
-    "dev": "docker-compose up -d && echo '⏳ Waiting for database to be ready...' && sleep 3 && cd backend && npm run prisma:generate && npm run prisma:migrate && npm run start:dev",
+    "dev": "docker-compose up -d && echo '⏳ Waiting for database to be ready...' && sleep 3 && cd backend && dotenv -e ../.env -- npm run prisma:generate && dotenv -e ../.env -- npm run prisma:migrate && dotenv -e ../.env -- npm run start:dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run start:dev",
+    "dev:backend": "cd backend && dotenv -e ../.env -- npm run start:dev",
     "db:start": "docker-compose up -d",
     "db:stop": "docker-compose down",
     "format": "cd backend && npm run format",
