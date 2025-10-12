@@ -109,9 +109,17 @@ Base URL: `http://localhost:3001/api`
 | Method | Endpoint | Description | Response |
 |--------|----------|-------------|----------|
 | `POST` | `/songs/upload` | Upload CSV file | `{ data: Song[], count: number }` |
-| `GET` | `/songs` | Get all songs (sorted by band) | `{ data: Song[], count: number }` |
+| `GET` | `/songs?order=asc` | Get all songs (sorted by band) | `{ data: Song[], count: number }` |
+| `DELETE` | `/songs` | Delete all songs | `204 No Content` |
 
 **CSV Format:** Semicolon-delimited with headers `Song Name;Band;Year`
+
+---
+
+## Bonus Features ✨
+
+- **Sortable Table**: Click the arrow next to "Band Name" to toggle between ascending/descending order
+- **Delete All**: Clear all songs from the database with one click
 
 ---
 

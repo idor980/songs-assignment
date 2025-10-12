@@ -1,19 +1,29 @@
 import { Badge, Spinner, Alert, Button, Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow } from 'flowbite-react';
-import { HiExclamationCircle, HiMusicNote } from 'react-icons/hi';
+import { HiExclamationCircle, HiMusicNote, HiTrash, HiChevronUp, HiChevronDown } from 'react-icons/hi';
 import type { Song } from '../types/song';
 
 interface SongsTableProps {
   songs: Song[];
   isLoading: boolean;
   error: string | null;
-  onRefresh: () => void;
+  sortOrder: 'asc' | 'desc';
+  onSortChange: (order: 'asc' | 'desc') => void;
+  onDeleteAll: () => void;
 }
 
 /**
  * SongsTable Component
  * Displays songs in a table format ordered by band name
  */
-export const SongsTable = ({ songs, isLoading, error, onRefresh }: SongsTableProps) => {
+export const SongsTable = ({ songs, isLoading, error, sortOrder, onSortChange, onDeleteAll }: SongsTableProps) => {
+  /**
+   * Toggles sort order between ascending and descending
+   */
+  const handleSortToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    onSortChange(newOrder);
+  };
   if (isLoading) {
     return (
       <div className="w-full max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg border border-gray-200">
@@ -62,8 +72,9 @@ export const SongsTable = ({ songs, isLoading, error, onRefresh }: SongsTablePro
               Total: <Badge color="blue" className="inline-flex">{songs.length}</Badge> songs
             </p>
           </div>
-          <Button onClick={onRefresh} color="light" size="sm" className="p-1">
-            Refresh
+          <Button onClick={onDeleteAll} color="failure" size="sm" className="p-2">
+            <HiTrash className="mr-2 h-4 w-4" />
+            Delete All
           </Button>
         </div>
 
@@ -73,12 +84,19 @@ export const SongsTable = ({ songs, isLoading, error, onRefresh }: SongsTablePro
             <TableHead>
               <TableHeadCell>#</TableHeadCell>
               <TableHeadCell>
-                <div className="flex items-center">
+                <button 
+                  type="button"
+                  onClick={handleSortToggle}
+                  className="flex items-center hover:text-blue-600 transition-colors cursor-pointer"
+                  title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
+                >
                   Band Name
-                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M5 10l5-5 5 5H5z" />
-                  </svg>
-                </div>
+                  {sortOrder === 'asc' ? (
+                    <HiChevronUp className="w-5 h-5 ml-1" />
+                  ) : (
+                    <HiChevronDown className="w-5 h-5 ml-1" />
+                  )}
+                </button>
               </TableHeadCell>
               <TableHeadCell>Song Name</TableHeadCell>
               <TableHeadCell>Year</TableHeadCell>

@@ -43,12 +43,13 @@ class ApiService {
 
   /**
    * Fetches all songs ordered by band name
+   * @param order - Sort order (asc or desc)
    * @returns Promise with songs data
    * @throws Error if fetch fails
    */
-  async getSongs(): Promise<SongsResponse> {
+  async getSongs(order: 'asc' | 'desc' = 'asc'): Promise<SongsResponse> {
     try {
-      const response = await fetch(`${API_URL}/songs`);
+      const response = await fetch(`${API_URL}/songs?order=${order}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch songs');
@@ -60,6 +61,28 @@ class ApiService {
         throw error;
       }
       throw new Error('An unexpected error occurred while fetching songs');
+    }
+  }
+
+  /**
+   * Deletes all songs from the database
+   * @returns Promise that resolves when deletion is complete
+   * @throws Error if delete fails
+   */
+  async deleteAllSongs(): Promise<void> {
+    try {
+      const response = await fetch(`${API_URL}/songs`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete songs');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('An unexpected error occurred while deleting songs');
     }
   }
 }

@@ -2,13 +2,16 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   UseInterceptors,
   UploadedFile,
   BadRequestException,
   Logger,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { SongsService, SongsResponse } from './songs.service';
+import type { SongsResponse } from './songs.service';
+import { SongsService } from './songs.service';
 import {
   MAX_FILE_SIZE,
   ALLOWED_FILE_EXTENSIONS,
@@ -55,15 +58,18 @@ export class SongsController {
 
   /**
    * Get all songs ordered by band name
+   * @param order - Sort order (asc or desc)
    * @returns Response with array of songs ordered by band name and count
    * @throws InternalServerErrorException if database operation fails
    */
   @Get()
-  async getAllSongs(): Promise<SongsResponse> {
+  async getAllSongs(
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ): Promise<SongsResponse> {
     try {
-      this.logger.log('Fetching all songs');
+      this.logger.log(`Fetching all songs (order: ${order})`);
 
-      const songs = await this.songsService.getAllSongsOrderedByBand();
+      const songs = await this.songsService.getAllSongsOrderedByBand(order);
 
       return {
         data: songs,
@@ -75,6 +81,22 @@ export class SongsController {
     }
   }
 
+  /**
+   * Delete all songs from the database
+   * @returns Response with count of deleted songs
+   * @throws InternalServerErrorException if database operation fails
+   */
+  @Delete()
+  async deleteAllSongs(): Promise<void> {
+    try {
+      this.logger.log('Deleting all songs');
+      await this.songsService.deleteAllSongs();
+      return;
+    } catch (error) {
+      this.logger.error('Error in delete all songs endpoint', error);
+      throw error;
+    }
+  }
   private validateUploadedFile(file: Express.Multer.File): void {
     if (!file) {
       throw new BadRequestException(

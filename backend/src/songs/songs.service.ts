@@ -101,16 +101,19 @@ export class SongsService {
 
   /**
    * Retrieves all songs from the database ordered by band name
-   * @returns Array of songs ordered by band name (ascending)
+   * @param order - Sort order (asc or desc)
+   * @returns Array of songs ordered by band name
    * @throws InternalServerErrorException if database operation fails
    */
-  async getAllSongsOrderedByBand(): Promise<SongData[]> {
+  async getAllSongsOrderedByBand(
+    order: 'asc' | 'desc' = 'asc',
+  ): Promise<SongData[]> {
     try {
-      this.logger.log('Fetching all songs ordered by band name');
+      this.logger.log(`Fetching all songs ordered by band name (${order})`);
 
       const songs = await this.prisma.song.findMany({
         orderBy: {
-          band: 'asc',
+          band: order,
         },
         select: {
           songName: true,
@@ -126,6 +129,28 @@ export class SongsService {
       this.logger.error('Error fetching songs from database', error);
       throw new InternalServerErrorException(
         'Failed to fetch songs from database',
+      );
+    }
+  }
+
+  /**
+   * Deletes all songs from the database
+   * @returns Count of deleted songs
+   * @throws InternalServerErrorException if database operation fails
+   */
+  async deleteAllSongs(): Promise<void> {
+    try {
+      this.logger.log('Deleting all songs from database');
+
+      const result = await this.prisma.song.deleteMany();
+
+      this.logger.log(`Deleted ${result.count} songs from database`);
+
+      return;
+    } catch (error) {
+      this.logger.error('Error deleting songs from database', error);
+      throw new InternalServerErrorException(
+        'Failed to delete songs from database',
       );
     }
   }

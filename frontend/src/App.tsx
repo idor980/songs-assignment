@@ -13,21 +13,29 @@ function App() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   /**
    * Fetches songs from the backend
+   * @param order - Sort order
+   * @param showLoading - Whether to show loading spinner (false during sort to prevent scroll jump)
    */
-  const fetchSongs = async () => {
-    setIsLoading(true);
+  const fetchSongs = async (order: 'asc' | 'desc' = sortOrder, showLoading: boolean = true) => {
+    if (showLoading) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
-      const response = await apiService.getSongs();
+      const response = await apiService.getSongs(order);
       setSongs(response.data);
+      setSortOrder(order);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load songs');
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -36,6 +44,30 @@ function App() {
    */
   const handleUploadSuccess = () => {
     fetchSongs();
+  };
+
+  /**
+   * Handles sort order change without showing loading spinner
+   */
+  const handleSortChange = (order: 'asc' | 'desc') => {
+    fetchSongs(order, false);
+  };
+
+  /**
+   * Handles deletion of all songs
+   */
+  const handleDeleteAll = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await apiService.deleteAllSongs();
+      setSongs([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete songs');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Fetch songs on component mount
@@ -70,7 +102,9 @@ function App() {
           songs={songs}
           isLoading={isLoading}
           error={error}
-          onRefresh={fetchSongs}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
+          onDeleteAll={handleDeleteAll}
         />
       </main>
     </div>
