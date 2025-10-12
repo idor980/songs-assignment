@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Spinner } from 'flowbite-react';
+import { Spinner, Button } from 'flowbite-react';
 import { HiUpload, HiCheckCircle, HiExclamationCircle } from 'react-icons/hi';
 import { twMerge } from 'tailwind-merge';
 import { apiService } from '../services/api';
@@ -142,23 +142,24 @@ export const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: () => void })
           </div>
 
           {selectedFile && (
-            <button
+            <Button
               onClick={handleUpload}
               disabled={isUploading}
-              className="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              size="lg"
+              className="w-full bg-blue-600 hover:bg-blue-700 p-2"
             >
               {isUploading ? (
                 <>
-                  <Spinner size="sm" />
+                  <Spinner size="sm" className="mr-2" />
                   <span>Uploading...</span>
                 </>
               ) : (
                 <>
-                  <HiUpload className="h-5 w-5" />
+                  <HiUpload className="h-5 w-5 mr-2" />
                   <span>Upload File</span>
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
 
