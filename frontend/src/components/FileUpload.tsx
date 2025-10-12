@@ -117,18 +117,18 @@ export const FileUpload = ({ onUploadSuccess }: { onUploadSuccess: () => void })
           <div 
             className={`w-full p-8 border-2 border-dashed rounded-lg transition-all cursor-pointer ${
               selectedFile 
-                ? 'border-green-300 bg-green-50 hover:border-green-500 hover:bg-green-100' 
+                ? 'border-blue-300 bg-blue-50 hover:border-blue-500 hover:bg-blue-100' 
                 : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
             }`}
             onClick={handleSelectFile}
           >
             <div className="flex flex-col items-center space-y-2">
-              <HiUpload className={`text-5xl ${selectedFile ? 'text-green-500' : 'text-gray-400'}`} />
+              <HiUpload className={`text-5xl ${selectedFile ? 'text-blue-500' : 'text-gray-400'}`} />
               <p className="text-lg font-medium text-gray-700">
                 {selectedFile ? selectedFile.name : 'Click to select CSV file'}
               </p>
               {selectedFile ? (
-                <p className="text-xs text-green-600 font-medium">
+                <p className="text-xs text-blue-600 font-medium">
                   ✓ File selected · Click to change
                 </p>
               ) : (
